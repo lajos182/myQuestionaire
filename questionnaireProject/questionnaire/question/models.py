@@ -1,5 +1,7 @@
-from django.db import models
 from datetime import date
+
+from django.db import models
+from django.contrib.auth.models import User
 # Create your models here.
 
 # *****************************客户***********************************
@@ -81,11 +83,12 @@ class QuestionnaireCheck(models.Model):
     comment = models.TextField(help_text="审核批注")
 
 # *****************************普通用户***********************************
-class User(models.Model):
+class UserInfo(models.Model):
     # 用户信息
+    user = models.OneToOneField(User)
     name = models.CharField(default='姓名', max_length=32, help_text='姓名')
     age = models.IntegerField(default=1, help_text='年龄')
-    sex = models.BooleanField(help_text='性别, 0→女, 1→男')
+    sex = models.BooleanField(default=1, help_text='性别, 0→女, 1→男')
     phone = models.CharField(default='', max_length=16, blank=True, null=True, help_text='手机号码')
     email = models.CharField(default='', max_length=64, blank=True, null=True, help_text='邮箱')
     address = models.CharField(default='', max_length=256, blank=True, null=True, help_text='地址')
@@ -96,33 +99,34 @@ class User(models.Model):
     hobby = models.CharField(default='', max_length=64, blank=True, null=True, help_text='兴趣爱好')
     salary = models.CharField(default='', max_length=32, blank=True, null=True, help_text='收入水平')
 
+
 class Point(models.Model):
     # 用户积分
-    user = models.OneToOneField('User', help_text='用户信息')
+    userinfo = models.OneToOneField('UserInfo', help_text='用户信息')
     balance = models.IntegerField(default=0, help_text='余额')
 
 class GetPoint(models.Model):
     # 获取积分
-    user = models.OneToOneField('User', help_text='用户信息')
+    userinfo = models.OneToOneField('UserInfo', help_text='用户信息')
     amount = models.IntegerField(default=0, help_text='积分值')
     create_date = models.DateTimeField(auto_now=True, help_text='积分获取时间')
     reason = models.CharField(default='', max_length=64, help_text='获取原因')
 
 class UsePoint(models.Model):
     # 积分使用记录
-    user = models.OneToOneField('User', help_text='用户信息')
+    userinfo = models.OneToOneField('UserInfo', help_text='用户信息')
     amount = models.IntegerField(default=0, help_text='积分值')
     create_date = models.DateTimeField(auto_now=True, help_text='积分获取时间')
     reason = models.CharField(default='', max_length=64, help_text='积分使用原因')
 
 class Answer(models.Model):
     # 参与问卷
-    user = models.ForeignKey('User', null=True, help_text='用户信息')
+    userinfo = models.ForeignKey('UserInfo', null=True, help_text='用户信息')
     questionnaire = models.ForeignKey('Questionnaire', help_text="问卷")
     create_date = models.DateTimeField(auto_now=True, help_text='参与问卷日期')
     is_done = models.BooleanField(default=False, help_text='是否已经完成')
 
 class AnswerItem(models.Model):
     # 用户回答题目
-    user = models.ForeignKey('User', null=True, help_text='用户信息')
+    userinfo = models.ForeignKey('UserInfo', null=True, help_text='用户信息')
     item = models.ForeignKey('QuestionItem', help_text='选项')
