@@ -7,6 +7,7 @@ from django.contrib.auth.models import User
 # *****************************客户***********************************
 class Customer(models.Model):
     # 客户信息
+    user = models.OneToOneField(User)
     name = models.CharField(default='名称', max_length=32, help_text='客户名称')
     email = models.CharField(default='', max_length=64, null=True, blank=True, help_text='邮箱')
     company = models.CharField(default='', max_length=32, null=True, blank=True, help_text='公司名称')
@@ -28,7 +29,7 @@ class Questionnaire(models.Model):
     deadline = models.DateTimeField(help_text='截止时间')
     quantity = models.IntegerField(default=1, help_text='发布数量')
     free_count = models.IntegerField(default=1, help_text='可用问卷数量')
-    state = models.IntegerField(default=0, help_text='状态, 0→草稿,1→待审核,2→审核失败,3→身体通过,4→已发布')
+    state = models.IntegerField(default=0, help_text='状态, 0→草稿,1→待审核,2→审核失败,3→审核通过,4→已发布')
     type = models.CharField(default='', max_length=64, null=True, blank=True, help_text='问卷类型')
 
 
