@@ -5,6 +5,7 @@ from django.conf.urls import url
 from django.http.response import HttpResponse
 from django.views.decorators.csrf import csrf_exempt
 from django.contrib.auth.models import User
+from django.contrib.auth import authenticate, login, logout
 
 from api.utils import *
 from question.models import *
@@ -56,26 +57,119 @@ class Register(object):
     @property
     def urls(self):
         urlpatterns = [
-            url(r'^{name}$'.format(name=resource.name), resource.enter)
-            for resource in self.resources
+            url(r'^{name}$'.format(name=resource.name), resource.enter) for resource in self.resources
         ]
         return urlpatterns
 
 
 class SessionRest(Rest):
     def put(self, request, *args, **kwargs):
-        return json_response({'msg': 'session put'})
+        data = request.PUT
+        username = data.get('username', '')
+        password = data.get('password', '')
+        # 查询数据库用户表
+        user = authenticate(username=username, password=password)
+        if user:
+            # 保存登录状态
+            login(request, user)
+            return json_response({
+                'msg': '登录成功'
+            })
+        else:
+            return params_error({
+                'msg': '用户名或密码错误'
+            })
 
     def delete(self, request, *args, **kwargs):
-        return json_response({'msg': 'session delete'})
+        logout(request)
+        return json_response({
+            'msg': '退出成功'
+        })
 
 
 
 class UserRest(Rest):
     def get(self, request, *args, **kwargs):
-        return json_response({'msg': 'user get'})
-
+        user = request.user
+        # 判断是否登录
+        if user.is_authenticated:
+            # 获取信息
+            data = dict()
+            if hasattr(user, 'customer'):
+                customer = user.customer
+                data['user'] = user.id
+                data['category'] = 'customer'
+                data['name'] = customer.name
+                data['email'] = customer.email
+                data['company'] = customer.company
+                data['address'] = customer.address
+                data['mobile'] = customer.mobile
+                data['phone'] = customer.phone
+                data['qq'] = customer.qq
+                data['wechat'] = customer.wechat
+                data['web'] = customer.web
+                data['industry'] = customer.industry
+                data['description'] = customer.description
+            elif hasattr(user, 'userinfo'):
+                userinfo = user.userinfo
+                data['user'] = user.id
+                data['category'] = 'userinfo'
+                data['name'] = userinfo.name
+                data['age'] = userinfo.age
+                data['sex'] = userinfo.sex
+                data['phone'] = userinfo.phone
+                data['email'] = userinfo.email
+                data['address'] = userinfo.address
+                data['birthday'] = userinfo.birthday
+                data['qq'] = userinfo.qq
+                data['wechat'] = userinfo.wechat
+                data['job'] = userinfo.job
+                data['hobby'] = userinfo.hobby
+                data['salary'] = userinfo.salary
+            else:
+                return json_response({})
+        else:
+            return not_authenticated()
+        return json_response(data)
     def post(self, request, *args, **kwargs):
+        # 判断用户是否登录
+        data = request.POST
+        user = request.user
+        if request.user.is_authenticated:
+            if hasattr(user, 'customer'):
+                customer = user.customer
+                customer.name = data.get('name', '')
+                customer.email = data.get('email', '')
+                customer.company = data.get('company', '')
+                customer.address = data.get('address', '')
+                customer.mobile = data.get('mobile', '')
+                customer.phone = data.get('phone', '')
+                customer.qq = data.get('qq', '')
+                customer.wechat = data.get('wechat', '')
+                customer.web = data.get('web', '')
+                customer.industry =data.get('customer', '')
+                customer.description = data.get('description', '')
+                customer.save()
+            elif hasattr(user, 'userinfo'):
+                userinfo = user.userinfo
+                userinfo.name = data.get('name', '')
+                userinfo.age = data.get('age', '')
+                userinfo.sex = data.get('sex', '')
+                userinfo.email = data.get('email', '')
+                userinfo.phone = data.get('phone', '')
+                userinfo.address = data.get('address', '')
+                userinfo.birthday = data.get('birthday', '')
+                userinfo.qq = data.get('qq', '')
+                userinfo.wechat = data.get('wechat', '')
+                userinfo.hobby = data.get('hobby', '')
+                userinfo.salary = data.get('salay', '')
+                userinfo.save()
+            else:
+                return json_response({
+                    'msg': '更新成功，恭喜'
+                })
+        else:
+            return not_authenticated()
         return json_response({'msg': 'user post'})
 
     def put(self, request, *args, **kwargs):
@@ -115,7 +209,7 @@ class UserRest(Rest):
             user_obj.phone = ''
             user_obj.email = ''
             user_obj.address = ''
-            # user_obj.birthday = ''
+            user_obj.birthday = date(2018, 1, 1)
             user_obj.qq = ''
             user_obj.wechat = ''
             user_obj.hobby = ''
