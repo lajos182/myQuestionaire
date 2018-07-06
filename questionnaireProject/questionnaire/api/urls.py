@@ -20,3 +20,5 @@ api = Register()
 api.register(SessionRest('session'))
 api.register(UserRest('user'))
 api.register(RegistCode())
+api.register(CustomerQuestionnaireRest('customer_questionnnaire'))
+
