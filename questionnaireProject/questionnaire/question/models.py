@@ -1,6 +1,7 @@
 from datetime import date
 
 from django.db import models
+from django.utils import timezone
 from django.contrib.auth.models import User
 # Create your models here.
 
@@ -25,7 +26,7 @@ class Questionnaire(models.Model):
     # 问卷
     customer = models.ForeignKey('Customer', help_text='客户信息')
     title = models.CharField(default='标题', max_length=64, help_text='标题')
-    create_date = models.DateTimeField(help_text='创建时间')
+    create_date = models.DateTimeField(auto_now=True, help_text='创建时间')
     deadline = models.DateTimeField(help_text='截止时间')
     quantity = models.IntegerField(default=1, help_text='发布数量')
     free_count = models.IntegerField(default=1, help_text='可用问卷数量')
