@@ -131,6 +131,7 @@ class UserRest(Rest):
         else:
             return not_authenticated()
         return json_response(data)
+
     def post(self, request, *args, **kwargs):
         # 判断用户是否登录
         data = request.POST
