@@ -6,6 +6,9 @@ from django.conf.urls import url
 
 # 导入工程内部的相关包
 from api.rest import *
+from api.customer import *
+from api.admin import *
+from api.user import *
 
 # # 新建session对象
 # session_obj = SessionRest()
@@ -20,5 +23,9 @@ api = Register()
 api.register(SessionRest('session'))
 api.register(UserRest('user'))
 api.register(RegistCode())
-api.register(CustomerQuestionnaireRest('customer_questionnnaire'))
-
+api.register(CustomerQuestionnaireRest('customer_questionnaire'))
+api.register(CustomerQuestionRest('customer_question'))
+api.register(AdminQuestionnaireRest('admin_questionnaire'))
+api.register(QuestionnaireCheckRest('questionnaire_comment'))
+api.register(UserQuestionnaireRest('user_questionnaire'))
+api.register(UserQuestionnaireParticipation('participation'))
