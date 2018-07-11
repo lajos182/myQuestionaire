@@ -81,7 +81,7 @@ DATABASES = {
         'NAME': 'questionnaire',
         'USER': 'root',
         'PASSWORD': 'jiang',
-        'HOST': 'localhost',
+        'HOST': 'lajos.top',
         'POST': 3306,
     }
 }

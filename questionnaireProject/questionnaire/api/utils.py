@@ -1,4 +1,5 @@
 import json
+import qrcode
 
 from django.http.response import HttpResponse
 
